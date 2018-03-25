@@ -1,10 +1,19 @@
 export function createMachine(config) {
   const machine = {
-    currentState: config.initialState,
+    // private API
+    _state: config.initialState,
+    _warnNonExistingTransition() {
+      console.warn(`Failed to fire "${transition}". State ${this._state} has no transition named "${transition}".`)
+    },
+
+    // public API
+    getState() {
+      return this._state
+    },
     fire(transition) {
-      const nextState = config.states[this.currentState].transitions[transition]
+      const nextState = config.states[this._state].transitions[transition]
       if (nextState) {
-        this.currentState = nextState
+        this._state = nextState
 
         // notify subscribers
         console.log('Notified...')
@@ -16,11 +25,11 @@ export function createMachine(config) {
           })
         }
       } else {
-        console.warn(`Failed to fire ${transition}. State ${this.currentState} has no transition named ${transition}.`)
+        this._warnNonExistingTransition()
       }
     },
     reset() {
-      this.currentState = config.initialState;
+      this._state = config.initialState;
     },
   }
 
