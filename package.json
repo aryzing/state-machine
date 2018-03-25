@@ -1,0 +1,14 @@
+{
+  "name": "state-machine",
+  "version": "0.0.1",
+  "description": "A simple state machine library",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Eduard Bardají Puig <ebardaji@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^22.4.3"
+  }
+}
