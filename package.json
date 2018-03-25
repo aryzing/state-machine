@@ -2,6 +2,7 @@
   "name": "state-machine",
   "version": "0.0.1",
   "description": "A simple state machine library",
+  "keywords": ["state machine", "state management", "state"],
   "main": "index.js",
   "scripts": {
     "test": "jest"
