@@ -21,7 +21,7 @@ export function createMachine(config) {
         const worker = config.states[nextState].worker
         if (worker) {
           setTimeout(() => {
-            worker(fire.bind(this))
+            worker(this.fire.bind(this))
           })
         }
       } else {
