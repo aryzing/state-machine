@@ -104,34 +104,10 @@ describe('Private API', () => {
       machine.fire('does not exist')
       expect(mockWarnNonExistingTransition.mock.calls.length).toBe(1)
     })
-
-    test('Will call worker after firing transition', (done) => {
-      const config = {
-        initialState: 'idle',
-        states: {
-          idle: {
-            transitions: {
-              start: 'doingSomething',
-            },
-          },
-          doingSomething: {
-            transitions: {
-              stop: 'idle',
-            },
-            worker() {
-              done()
-            }
-          }
-        }
-      }
-
-      const machine = createMachine(config)
-      machine.fire('start')
-    })
   })
+
   describe('reset()', () => {
-    test('Calls worker if present after resetting', (done) => {
-      let callCount = 0
+    test('Calls subscribers after resetting', (done) => {
       const config = {
         initialState: 'idle',
         states: {
@@ -139,13 +115,6 @@ describe('Private API', () => {
             transitions: {
               start: 'doingSomething',
             },
-            worker() {
-              console.log('Worker called')
-              callCount++
-              if (callCount === 2) {
-                done()
-              }
-            }
           },
           doingSomething: {
             transitions: {
@@ -156,6 +125,11 @@ describe('Private API', () => {
       }
 
       const machine = createMachine(config)
+      machine.subscribe(() => {
+        if (machine.getState() === 'idle') {
+          done()
+        }
+      })
       machine.fire('start')
       machine.reset()
     })

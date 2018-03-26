@@ -5,14 +5,6 @@ export function createMachine(config) {
     _warnNonExistingTransition() {
       console.warn(`Failed to fire "${transition}". State ${this._state} has no transition named "${transition}".`)
     },
-    _runWorker() {
-      const worker = config.states[this._state].worker
-      if (worker) {
-        setTimeout(() => {
-          worker(this.fire.bind(this))
-        })
-      }
-    },
     _listeners: [],
     _callListeners() {
       this._listeners.forEach(listener => listener());
@@ -27,7 +19,6 @@ export function createMachine(config) {
       if (nextState) {
         this._state = nextState
         this._callListeners()
-        this._runWorker()
       } else {
         this._warnNonExistingTransition()
       }
@@ -35,7 +26,6 @@ export function createMachine(config) {
     reset() {
       this._state = config.initialState;
       this._callListeners()
-      this._runWorker()
     },
     subscribe(listener) {
       this._listeners.push(listener);
@@ -44,7 +34,6 @@ export function createMachine(config) {
       }
     },
   }
-
-  machine._runWorker()
+  
   return machine
 }
