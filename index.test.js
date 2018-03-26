@@ -1,4 +1,4 @@
-import { createMachine } from '.'
+import { createMachine } from './index'
 
 describe('Creating a state machine', () => {
   const config = {
@@ -26,6 +26,7 @@ describe('Creating a state machine', () => {
     expect(typeof machine.getState).toBe('function')
     expect(typeof machine.fire).toBe('function')
     expect(typeof machine.reset).toBe('function')
+    expect(typeof machine.subscribe).toBe('function')
   })
 })
 
@@ -67,6 +68,14 @@ describe('Public API', () => {
       expect(machine.getState()).toBe('anotherState')
       machine.reset()
       expect(machine.getState()).toBe('idle')
+    })
+  })
+
+  describe('subscribe()', () => {
+    test('Calls subscribers after state change', (done) => {
+      const machine = createMachine(config)
+      machine.subscribe(() => {done()})
+      machine.fire('start')
     })
   })
 })
@@ -120,8 +129,38 @@ describe('Private API', () => {
       machine.fire('start')
     })
   })
-  xdescribe('reset()', () => {
-    test('Calls worker if present after resetting', () => {
+  describe('reset()', () => {
+    test('Calls worker if present after resetting', (done) => {
+      let callCount = 0
+      const config = {
+        initialState: 'idle',
+        states: {
+          idle: {
+            transitions: {
+              start: 'doingSomething',
+            },
+            worker() {
+              console.log('Worker called')
+              callCount++
+              if (callCount === 2) {
+                done()
+              }
+            }
+          },
+          doingSomething: {
+            transitions: {
+              stop: 'idle',
+            },
+          }
+        }
+      }
+
+      const machine = createMachine(config)
+      machine.fire('start')
+      machine.reset()
     })
   })
 })
+
+// verify that object passed into the machine is verified for consistency.
+// Test that validation process works properly
